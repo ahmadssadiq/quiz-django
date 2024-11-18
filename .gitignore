@@ -1,0 +1,57 @@
+# Virtual Environment
+venv/
+env/
+
+# Python-related files
+*.pyc
+*.pyo
+__pycache__/
+
+# Database
+*.sqlite3
+
+# Django migrations
+*/migrations/*
+
+# Environment variables
+.env
+
+# Static files
+static/
+staticfiles/
+
+# Media files
+media/
+
+# Logs
+*.log
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# MacOS-specific files
+.DS_Store
+
+# Backup files
+*.bak
+*.swp
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Deployment files
+*.pid
+
+# Pytest cache
+.pytest_cache/
+
+# Build files
+dist/
+build/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.temp
