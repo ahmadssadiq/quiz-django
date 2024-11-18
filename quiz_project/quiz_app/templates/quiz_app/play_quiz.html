@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ quiz.title }} - Play Quiz
+{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">{{ quiz.title }}</h1>
+    <div class="mt-4">
+        {% for question in questions %}
+        <div class="mb-4">
+            <h5>{{ forloop.counter }}. {{ question.text }}</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-check">
+                    {% for answer in question.answers.all %}
+                    <div class="mb-2">
+                        <input type="radio" class="form-check-input" id="answer{{ answer.id }}" name="answer"
+                            value="{{ answer.id }}">
+                        <label class="form-check-label" for="answer{{ answer.id }}">
+                            {{ answer.text }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock body %}
