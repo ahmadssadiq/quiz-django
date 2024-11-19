@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Question, Answer, Quiz
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, QuizForm, QuestionFormSet, AnswerFormSet
 from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -53,19 +53,42 @@ def sign_out(request):
 @login_required
 def create_quiz(request):
     if request.method == 'POST':
-        title = request.POST['title']
-        description = request.POST['description']
-        category = request.POST['category']
-        difficulty = request.POST['difficulty']
-        quiz = Quiz.objects.create(
-            title=title,
-            description=description,
-            category=category,
-            difficulty=difficulty,
-            owner=request.user
-        )
-        return redirect('index')
-    return render(request, 'create_quiz.html')
+        # Initialize the quiz form with POST data
+        quiz_form = QuizForm(request.POST)
+        
+        if quiz_form.is_valid():
+            # Save the quiz instance but don't commit yet
+            quiz = quiz_form.save(commit=False)
+            quiz.owner = request.user  # Set the owner as the logged-in user
+            quiz.save()
+
+            # Loop through questions submitted in the form
+            for index in range(len(request.POST.getlist('questions[0][text]'))):
+                # Create a Question instance
+                question = Question.objects.create(
+                    quiz=quiz,
+                    text=request.POST.get(f'questions[{index}][text]', ""),
+                    question_type=request.POST.get(f'questions[{index}][question_type]', "text"),
+                    points=request.POST.get(f'questions[{index}][points]', 0),
+                )
+
+                # Loop through answers for this question
+                for answer_index in range(len(request.POST.getlist(f'questions[{index}][answers][0][text]'))):
+                    Answer.objects.create(
+                        question=question,
+                        text=request.POST.get(f'questions[{index}][answers][{answer_index}][text]', ""),
+                        is_correct=request.POST.get(f'questions[{index}][answers][{answer_index}][is_correct]', "off") == "on"
+                    )
+
+            # Redirect to the index page after successful creation
+            return redirect('index')
+        else:
+            return render(request, 'create_quiz.html', {'quiz_form': quiz_form})
+
+    else:
+        # Initialize empty forms for GET requests
+        quiz_form = QuizForm()
+        return render(request, 'create_quiz.html', {'quiz_form': quiz_form})
 
 @login_required
 def play_quiz(request, quiz_id):
