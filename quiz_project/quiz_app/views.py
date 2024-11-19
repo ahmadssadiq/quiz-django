@@ -4,32 +4,45 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Question, Answer, Quiz
 from django.contrib.auth.decorators import login_required
+from .forms import CustomUserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+
 
 def index(request):
     quizzes = Quiz.objects.all()
-    return render(request, 'index.html', {'quizzes': quizzes})
+    context = {
+        'quizzes': quizzes,
+        'user': request.user  # Pass the user object to the template
+    }
+    return render(request, 'index.html', context)
 
 
 def sign_up(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        if not User.objects.filter(username=username).exists():
-            user = User.objects.create_user(username=username, password=password)
-            login(request, user)
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Automatically log in the user after sign-up
             return redirect('index')
-    return render(request, 'sign_up.html')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'sign_up.html', {'form': form})
+
 
 
 def sign_in(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)
-            return redirect('index')
-    return render(request, 'sign_in.html')
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('index')  # Redirect to the index page
+    else:
+        form = AuthenticationForm()
+    return render(request, 'sign_in.html', {'form': form})
 
 
 @login_required
