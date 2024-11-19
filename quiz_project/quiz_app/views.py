@@ -5,6 +5,10 @@ from django.http import JsonResponse
 from .models import Question, Answer, Quiz
 from django.contrib.auth.decorators import login_required
 
+def index(request):
+    quizzes = Quiz.objects.all()
+    return render(request, 'index.html', {'quizzes': quizzes})
+
 
 def sign_up(request):
     if request.method == 'POST':
@@ -14,7 +18,7 @@ def sign_up(request):
             user = User.objects.create_user(username=username, password=password)
             login(request, user)
             return redirect('index')
-    return render(request, 'quiz_app/sign_up.html')
+    return render(request, 'sign_up.html')
 
 
 def sign_in(request):
@@ -25,7 +29,7 @@ def sign_in(request):
         if user:
             login(request, user)
             return redirect('index')
-    return render(request, 'quiz_app/sign_in.html')
+    return render(request, 'sign_in.html')
 
 
 @login_required
@@ -48,11 +52,19 @@ def create_quiz(request):
             owner=request.user
         )
         return redirect('index')
-    return render(request, 'quiz_app/create_quiz.html')
+    return render(request, 'create_quiz.html')
 
 @login_required
 def play_quiz(request, quiz_id):
     quiz = Quiz.objects.get(id=quiz_id)
     questions = quiz.questions.all()
     context = {'quiz': quiz, 'questions': questions}
-    return render(request, 'quiz_app/play_quiz.html', context)
+    return render(request, 'play_quiz.html', context)
+
+
+def check_answer(request, question_id):
+    question = Question.objects.get(id=question_id)
+    selected_answer_id = request.POST.get('answer')
+    selected_answer = Answer.objects.get(id=selected_answer_id)
+    is_correct = selected_answer.is_correct
+    return JsonResponse({'correccreatet': is_correct})

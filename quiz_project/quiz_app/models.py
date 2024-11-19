@@ -89,4 +89,4 @@ class QuizAttempt(models.Model):
     completed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username}'s attempt at {self.quiz.title}åå
+        return f"{self.user.username}'s attempt at {self.quiz.title}"
