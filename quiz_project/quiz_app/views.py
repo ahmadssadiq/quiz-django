@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Question, Answer, Quiz
+from .models import Question, Answer, Quiz, QuizAttempt
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm, QuizForm, QuestionFormSet, AnswerFormSet
 from django.contrib.auth.forms import AuthenticationForm
@@ -104,3 +104,39 @@ def check_answer(request, question_id):
     selected_answer = Answer.objects.get(id=selected_answer_id)
     is_correct = selected_answer.is_correct
     return JsonResponse({'correccreatet': is_correct})
+
+@login_required
+def submit_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    questions = quiz.questions.all()
+    total_questions = questions.count()
+    correct_answers = 0
+
+    # Calculate the score
+    for question in questions:
+        user_answer_id = request.POST.get(f'question_{question.id}')
+        if user_answer_id:
+            user_answer = Answer.objects.get(id=user_answer_id)
+            if user_answer.is_correct:
+                correct_answers += 1
+
+    # Save the attempt
+    QuizAttempt.objects.create(
+        user=request.user,
+        quiz=quiz,
+        score=correct_answers,
+        time_taken=0  # Placeholder if time tracking is added later
+    )
+
+    # Redirect to results page
+    return redirect('quiz_results', quiz_id=quiz.id, score=correct_answers, total=total_questions)
+
+@login_required
+def quiz_results(request, quiz_id, score, total):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    context = {
+        'quiz': quiz,
+        'score': score,
+        'total': total,
+    }
+    return render(request, 'quiz_results.html', context)

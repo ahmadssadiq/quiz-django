@@ -45,10 +45,20 @@ description: this files define the database models for the Quiz application. The
             - completed_at: The timestamp for when the quiz attempt was completed.
         - Relationships:
             - Belongs to a single User and a single Quiz.
-
+5. UserAnswer:
+        - Tracks a user's answer to a specific question in a quiz attempt.
+        - Fields:
+            - quiz_attempt: The quiz attempt to which this answer belongs (ForeignKey to QuizAttempt).
+            - question: The question being answered (ForeignKey to Question).
+            - selected_answer: The answer selected by the user (ForeignKey to Answer, nullable).
+            - is_correct: Boolean indicating whether the selected answer is correct.
+        - Relationships:
+            - Belongs to a single QuizAttempt and a single Question.
 """
+
 from django.db import models
 from django.contrib.auth.models import User
+
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
@@ -73,7 +83,9 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name="answers"
+    )
     text = models.TextField()
     is_correct = models.BooleanField(default=False)
 
@@ -90,3 +102,29 @@ class QuizAttempt(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s attempt at {self.quiz.title}"
+
+
+class UserAnswer(models.Model):
+    """
+    Tracks a user's answer to a specific question in a quiz.
+    """
+
+    quiz_attempt = models.ForeignKey(
+        QuizAttempt, on_delete=models.CASCADE, related_name="user_answers"
+    )
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_answer = models.ForeignKey(
+        Answer, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    is_correct = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        """
+        Automatically calculate whether the selected answer is correct when saving.
+        """
+        if self.selected_answer:
+            self.is_correct = self.selected_answer.is_correct
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.quiz_attempt.user.username}'s answer to '{self.question.text}'"

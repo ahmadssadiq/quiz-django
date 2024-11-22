@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Quiz Results
+{% endblock title %}
+
+{% block body %}
+<div class="container">
+    <h2>Quiz Results</h2>
+    <p><strong>Quiz:</strong> {{ quiz.title }}</p>
+    <p><strong>Your Score:</strong> {{ score }} out of {{ total }}</p>
+
+    <a href="{% url 'index' %}" class="btn btn-primary">Return to Home</a>
+</div>
+{% endblock body %}
