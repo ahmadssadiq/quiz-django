@@ -5,20 +5,21 @@ Play Quiz
 {% endblock title %}
 
 {% block body %}
-<div class="container">
+<div class="containerquiz">
     <h2>{{ quiz.title }}</h2>
     <p>{{ quiz.description }}</p>
 
+    <!-- Quiz Form -->
     <form method="post" action="{% url 'submit_quiz' quiz.id %}">
         {% csrf_token %}
 
-        <!-- Iterate through questions -->
-        {% for question in quiz.questions.all %}
+        <!-- Iterate through all questions -->
+        {% for question in questions %}
         <div class="question">
             <h4>Question {{ forloop.counter }}</h4>
             <p>{{ question.text }}</p>
 
-            <!-- Iterate through answers -->
+            <!-- Iterate through the answers for this question -->
             {% for answer in question.answers.all %}
             <div class="form-check">
                 <input type="radio" name="question_{{ question.id }}" id="answer_{{ answer.id }}"
@@ -32,7 +33,8 @@ Play Quiz
         <hr>
         {% endfor %}
 
-        <button type="submit" class="btn btn-success">Submit Quiz</button>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success btn-centered">Submit Quiz</button>
     </form>
 </div>
 {% endblock body %}

@@ -5,7 +5,7 @@ Create Quiz
 {% endblock title %}
 
 {% block body %}
-<div class="container">
+<div class="containerquiz">
     <h2>Create a Quiz</h2>
     <form method="post" id="quiz-form">
         {% csrf_token %}
@@ -44,6 +44,7 @@ Create Quiz
     </form>
 </div>
 
+<!-- Add this JavaScript at the end of the file -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         let questionIndex = 1;
