@@ -1,3 +1,25 @@
+"""
+Author: Ahmad Sadiq U37206345
+File: views.py
+Date: 12/04/24
+
+Description: This file defines the views for the Quiz application. Views handle the interaction 
+between the user and the server by processing HTTP requests and returning appropriate responses. 
+Each view corresponds to a specific functionality, such as user authentication, quiz creation, 
+playing a quiz, and displaying results.
+
+Views in this file:
+1. index: Displays the list of available quizzes on the home page.
+2. sign_up: Handles user registration.
+3. sign_in: Handles user login.
+4. sign_out: Logs out the user and redirects to the login page.
+5. create_quiz: Allows authenticated users to create a quiz with questions and answers.
+6. play_quiz: Fetches and displays a specific quiz for the user to attempt.
+7. check_answer: Verifies if a selected answer is correct and returns the result as JSON.
+8. submit_quiz: Processes user-submitted answers, calculates the score, and saves the attempt.
+9. quiz_results: Displays the results of a quiz attempt.
+"""
+
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,6 +31,13 @@ from django.contrib.auth.forms import AuthenticationForm
 
 
 def index(request):
+    """
+    Displays the list of available quizzes on the home page.
+    Parameters:
+        request: The HTTP request object.
+    Returns:
+        HttpResponse: Renders the 'index.html' template with all quizzes and the user object.
+    """
     quizzes = Quiz.objects.all()
     context = {
         "quizzes": quizzes,
@@ -18,6 +47,14 @@ def index(request):
 
 
 def sign_up(request):
+    """
+    Handles user registration.
+    Parameters:
+        request: The HTTP request object.
+    Returns:
+        HttpResponse: Renders the 'sign_up.html' template with the registration form,
+        or redirects to 'index' upon successful registration.
+    """
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -30,6 +67,14 @@ def sign_up(request):
 
 
 def sign_in(request):
+    """
+    Handles user login.
+    Parameters:
+        request: The HTTP request object.
+    Returns:
+        HttpResponse: Renders the 'sign_in.html' template with the login form,
+        or redirects to 'index' upon successful login.
+    """
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -46,12 +91,27 @@ def sign_in(request):
 
 @login_required
 def sign_out(request):
+    """
+    Logs out the user and redirects to the login page.
+    Parameters:
+        request: The HTTP request object.
+    Returns:
+        HttpResponseRedirect: Redirects to the 'sign_in' page.
+    """
     logout(request)
     return redirect("sign_in")
 
 
 @login_required
 def create_quiz(request):
+    """
+    Allows authenticated users to create a quiz with questions and answers.
+    Parameters:
+        request: The HTTP request object.
+    Returns:
+        HttpResponse: Renders the 'create_quiz.html' template with a quiz form,
+        or redirects to 'index' upon successful quiz creation.
+    """
     if request.method == "POST":
         print(request.POST)  # Debugging: Print all POST data
 
@@ -119,6 +179,14 @@ def create_quiz(request):
 
 @login_required
 def play_quiz(request, quiz_id):
+    """
+    Fetches and displays a specific quiz for the user to attempt.
+    Parameters:
+        request: The HTTP request object.
+        quiz_id: The ID of the quiz to be played.
+    Returns:
+        HttpResponse: Renders the 'play_quiz.html' template with the quiz and its questions.
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id)  # Fetch the quiz
     questions = quiz.questions.all()  # Get all questions for the quiz
 
@@ -130,6 +198,14 @@ def play_quiz(request, quiz_id):
 
 
 def check_answer(request, question_id):
+    """
+    Verifies if the selected answer for a question is correct.
+    Parameters:
+        request: The HTTP request object.
+        question_id: The ID of the question being answered.
+    Returns:
+        JsonResponse: A JSON response indicating whether the answer is correct.
+    """
     question = Question.objects.get(id=question_id)
     selected_answer_id = request.POST.get("answer")
     selected_answer = Answer.objects.get(id=selected_answer_id)
@@ -139,6 +215,14 @@ def check_answer(request, question_id):
 
 @login_required
 def submit_quiz(request, quiz_id):
+    """
+    Processes user-submitted answers, calculates the score, and saves the quiz attempt.
+    Parameters:
+        request: The HTTP request object.
+        quiz_id: The ID of the quiz being submitted.
+    Returns:
+        HttpResponseRedirect: Redirects to the quiz results page.
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id)
     questions = quiz.questions.all()  # Get all questions for the quiz
     total_questions = questions.count()
@@ -170,6 +254,16 @@ def submit_quiz(request, quiz_id):
 
 @login_required
 def quiz_results(request, quiz_id, score, total):
+    """
+    Displays the results of a quiz attempt.
+    Parameters:
+        request: The HTTP request object.
+        quiz_id: The ID of the quiz.
+        score: The score achieved by the user.
+        total: The total number of questions in the quiz.
+    Returns:
+        HttpResponse: Renders the 'quiz_results.html' template with the quiz and score details.
+    """
     quiz = get_object_or_404(Quiz, id=quiz_id)
     context = {
         "quiz": quiz,
