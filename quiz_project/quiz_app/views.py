@@ -1,6 +1,6 @@
 """
-Author: Ahmad Sadiq U37206345
 File: views.py
+Author: Ahmad Sadiq U37206345
 Date: 12/04/24
 
 Description: This file defines the views for the Quiz application. Views handle the interaction 

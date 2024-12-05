@@ -1,3 +1,11 @@
+# File: create_quiz.html #}
+{# Author: Ahmad Sadiq (U37206345) #}
+{# Date: 12/4/24 #}
+{# Description: This template provides the interface for users to create a new quiz. It includes sections for entering
+quiz details, adding questions, and specifying answers for each question. Users can dynamically add multiple questions
+and corresponding answers. #}
+
+
 {% extends 'base.html' %}
 
 {% block title %}
@@ -17,6 +25,7 @@ Create Quiz
         <!-- Questions -->
         <h3>Questions</h3>
         <div id="questions-container">
+            <!-- Initial Question Template -->
             <div class="question" data-question-index="0">
                 <h4>Question 1</h4>
                 <label for="question-0-text">Question:</label>
@@ -24,6 +33,7 @@ Create Quiz
 
                 <h5>Answers</h5>
                 <div class="answers" data-question-index="0">
+                    <!-- Initial Answer Template for the First Question -->
                     <div class="answer" data-answer-index="0">
                         <label for="question-0-answer-0-text">Answer:</label>
                         <input type="text" name="questions[0][answers][0][text]" id="question-0-answer-0-text" required>
@@ -38,13 +48,14 @@ Create Quiz
                 </button>
             </div>
         </div>
-
+        <!-- Button to Add Another Question -->
         <button type="button" id="add-question" class="btn btn-primary">Add Another Question</button>
+        <!-- Submit Button to Create the Quiz -->
         <button type="submit" class="btn btn-success">Create Quiz</button>
     </form>
 </div>
 
-<!-- Add this JavaScript at the end of the file -->
+<!-- JavaScript to Handle Dynamic Addition of Questions and Answers -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         let questionIndex = 1;

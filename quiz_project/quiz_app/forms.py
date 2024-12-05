@@ -1,6 +1,6 @@
 """
-Author: Ahmad Sadiq U37206345
 File: forms.py
+Author: Ahmad Sadiq U37206345
 Date: 12/4/24
 
 Description: This file defines the forms used in the Quiz application for user authentication,

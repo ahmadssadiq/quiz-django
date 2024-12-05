@@ -1,6 +1,6 @@
 """
-Author: Ahmad Sadiq U37206345
 File: urls.py
+Author: Ahmad Sadiq U37206345
 Date: 12/04/24
 
 Description: This file defines the URL routing for the Quiz application. 
