@@ -134,13 +134,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",  # Default for local development
+        "NAME": BASE_DIR / "db.sqlite3",  # For local development
     }
 }
 
-# Override with Heroku's PostgreSQL settings if DATABASE_URL exists
+# Heroku production database override
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.config(
-        default=DATABASE_URL, conn_max_age=600, ssl_require=True
-    )
+    DATABASES["default"] = dj_database_url.config(default=DATABASE_URL)
