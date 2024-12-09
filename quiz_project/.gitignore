@@ -33,4 +33,4 @@ media/
 
 # Backup files
 *.bak
-*.swp
+*.swpdb.sqlite3
