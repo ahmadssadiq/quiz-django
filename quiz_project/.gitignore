@@ -7,19 +7,17 @@ env/
 *.pyo
 __pycache__/
 
-
 # Django migrations
-*/migrations/*
+**/migrations/*.py[cod]
+**/migrations/__pycache__/
 
 # Environment variables
 .env
 
-# Static files
-# static/
-# staticfiles/
-
-# Media files
-media/
+# Static and Media files
+/static/
+/staticfiles/
+/media/
 
 # Logs
 *.log
@@ -33,4 +31,19 @@ media/
 
 # Backup files
 *.bak
-*.swpdb.sqlite3
+*.swp
+
+# Database (SQLite)
+db.sqlite3
+
+# Node modules (if used for frontend)
+node_modules/
+
+# Python build files
+*.egg-info/
+*.egg
+
+# Heroku-related files to include
+!requirements.txt
+!Procfile
+!runtime.txt
